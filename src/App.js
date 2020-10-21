@@ -15,9 +15,9 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
+import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -80,12 +80,12 @@ class App extends Component {
     //this.requestSignOut = this.requestSignOut.bind(this);
     //this.signedOutFlow = this.signedOutFlow.bind(this);
     //this.getMessages = this.getMessages.bind(this);
-    console.log("Calling Load Data...");
+
     this.loadData = this.loadData.bind(this);
   }
 
   componentDidMount() {
-
+    console.log("Calling Load Data...");
 
   	this.loadData();
 
@@ -197,7 +197,7 @@ class App extends Component {
     this.setState({seatPrice: utils.format.formatNearAmount(findCurrentSeatPrice.toString(), 0) });
     this.setState({nextSeatPrice: utils.format.formatNearAmount(findNextSeatPrice.toString(), 0)});
 
-    this.intervalID = setTimeout(this.loadData.bind(this), 100000);
+    this.intervalID = setTimeout(this.loadData.bind(this), 300000);
 
   }
 
@@ -253,6 +253,14 @@ class App extends Component {
     let percentageComplete = numBlocksProduced / epoch_length;
     let epochPercent = Math.floor(percentageComplete * 100);
     let epoch = epochPercent;
+
+    var pool_name = "openshards.poolv1.near"
+
+    console.log(validators)
+
+    let selected_validator = (validators) ? validators.current_validators.filter(validator => validator.account_id.includes(pool_name)) : ''
+
+    console.log(selected_validator)
 
 
     const useStyles = makeStyles((theme) => ({
@@ -344,10 +352,9 @@ class App extends Component {
         <div className={classes.root}>
           <Grid container spacing={5} alignItems="flex-start" alignContent="flex-start">
 
-
            {(validators) &&
            <>
-            <Grid item className={classes.validators} lg={4} md={6} sm={6} xs={6}>
+            <Grid item className={classes.validators} lg={4} md={12} sm={12} xs={12}>
               <Card className={classes.root} variant="outlined">
                 <CardContent>
                   <Typography className={classes.title} color="primary" variant="h6" component="h6">
@@ -358,12 +365,71 @@ class App extends Component {
                   </Typography>
                   <Calculator near={self.props.near} validators={self.state.validators} classes={classes} isLoading={self.state.isLoading} />
                   <Box variant="caption" fontSize={11} fontWeight={500} fontStyle="italic">
-                    For estimation purposes only. Actual rewards will very.
+                    * For estimation purposes only. Actual rewards will very.
                   </Box>
+                  <br/>
+                  <Button href="https://wallet.near.org/staking/openshards.poolv1.near" target="_blank" font-family="Poppins;" variant="contained" color="primary">
+                    Stake with NEAR Wallet
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item className={classes.validators} lg={4} md={6} sm={6} xs={6}>
+            <Grid item className={classes.validators} lg={3} md={7} sm={7} xs={7}>
+              <Card className={classes.root} variant="outlined">
+                <CardContent>
+                  <Typography className={classes.title} color="primary" variant="h6" component="h6">
+                    OSA Pool Status
+                  </Typography>
+                  <Typography color="textSecondary">
+                        {(selected_validator) ? (<Tooltip title={"Good"} aria-label="Good"><CheckCircleIcon style={{ color: green[600] }} /></Tooltip> ) 
+                      : (<Tooltip title="Need validators" aria-label="Need validators"><ErrorIcon style={{ color: yellow[800] }} /></Tooltip> )  } 
+                  </Typography>
+                  <Typography color="textSecondary">
+                   { ((selected_validator[0].num_produced_blocks / selected_validator[0].num_expected_blocks) * 100) + '% Online'}
+                  </Typography>
+                </CardContent>
+              </Card>
+              <br/>
+              <Card className={classes.root} variant="outlined">
+                <CardContent>
+                  <Typography className={classes.title} color="primary" variant="h6" component="h6">
+                    EPOCH
+                  </Typography>
+                  <Typography variant="h6" component="h6">
+                    &nbsp;{epoch}% complete
+                  </Typography>
+                  <Typography color="textSecondary">
+                    Last block: {blockHeight}
+                  </Typography>
+                  <Typography color="textSecondary">
+                   Start block: {startHeight}
+                  </Typography>
+                </CardContent>
+              </Card>
+              <br/>
+              <Card className={classes.scoreCard} variant="outlined">
+                <CardContent>
+                  <Typography className={classes.title} color="primary" variant="h6" component="h6">
+                     NEXT SEAT &nbsp; 
+                    {
+                      (nextSeatPrice > seatPrice)
+                      ? <Tooltip title="Seat Price Up" aria-label="Good Standing"><ArrowUpwardIcon style={{ color: yellow[800] }} /></Tooltip> 
+                      : <Tooltip title="Seat Price Down" aria-label="Seat Price Down"><ArrowDownwardIcon style={{ color: green[600] }} /></Tooltip>
+                    }
+                  </Typography>
+                  <Typography variant="h6" component="h6">
+                    &nbsp;{nextSeatPrice}
+                  </Typography>
+                  <Typography color="textSecondary">
+                    Seat price: {seatPrice}
+                  </Typography>
+                  <Typography color="textSecondary">
+                   &nbsp;
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item className={classes.validators} lg={4} md={10} sm={10} xs={10}>
               <Card className={classes.root} variant="outlined">
                 <CardContent>
                   <Typography className={classes.title} color="primary" variant="h6" component="h6">
@@ -379,46 +445,6 @@ class App extends Component {
                    NEAR to yoctoNEAR
                   </Typography>
                   <NEARCalculator near={self.props.near} validators={self.state.validators} classes={classes} isLoading={self.state.isLoading} />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item className={classes.validators} lg={3} md={6} sm={6} xs={6}>
-              <Card className={classes.root} variant="outlined">
-                <CardContent>
-                  <Typography className={classes.title} color="primary" variant="h6" component="h6">
-                    EPOCH
-                  </Typography>
-                  <Typography variant="h5" component="h5">
-                    &nbsp;{epoch}%
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Last: {blockHeight}
-                  </Typography>
-                  <Typography color="textSecondary">
-                   Start: {startHeight}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <br/>
-              <Card className={classes.scoreCard} variant="outlined">
-                <CardContent>
-                  <Typography className={classes.title} color="primary" variant="h6" component="h6">
-                     NEXT SEAT &nbsp; 
-                    {
-                      (nextSeatPrice > seatPrice)
-                      ? <Tooltip title="Seat Price Up" aria-label="Good Standing"><ArrowUpwardIcon style={{ color: yellow[800] }} /></Tooltip> 
-                      : <Tooltip title="Seat Price Down" aria-label="Seat Price Down"><ArrowDownwardIcon style={{ color: green[600] }} /></Tooltip>
-                    }
-                  </Typography>
-                  <Typography variant="h5" component="h2">
-                    &nbsp;{nextSeatPrice}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Seat price: {seatPrice}
-                  </Typography>
-                  <Typography color="textSecondary">
-                   &nbsp;
-                  </Typography>
                 </CardContent>
               </Card>
             </Grid>

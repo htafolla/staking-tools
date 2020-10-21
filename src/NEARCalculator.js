@@ -62,7 +62,7 @@ class NEARCalculator extends Component {
 
 
       const results = !this.state.searchTerm
-      ? 1
+      ? new Big(1)
       : this.state.searchTerm;
 
     	this.setState({searchTerm: results});
@@ -79,7 +79,6 @@ class NEARCalculator extends Component {
 
     const self = this
 
-
     if(!self._isMounted) {
       return <><p>Loading...</p></>;
     }
@@ -93,7 +92,7 @@ class NEARCalculator extends Component {
     const handleFocus = (event) => event.target.select();
 
     const results = !this.state.searchTerm
-    ? 1
+    ? new Big(1)
     : this.state.searchTerm;
 
   	const classes = makeStyles((theme) => ({
@@ -113,16 +112,16 @@ class NEARCalculator extends Component {
 
         <TextField
           id="search"
-          
-          value={this.state.searchTerm}
+          type="number"
           className="highlight"
+          placeholder="1"
+          defaultValue="1"
+          value={this.state.searchTerm}
           onChange={handleChange}
           onFocus={handleFocus}
-          defaultValue="1"
           label="NEAR Ⓝ"
           variant="outlined"
           margin="dense"
-          placeholder="1"
         />
 
 
@@ -130,10 +129,7 @@ class NEARCalculator extends Component {
           id="near"
           label="yoctoNEAR Ⓝ"
           className="yocto"
-          value={utils.format.parseNearAmount(this.state.searchTerm,  0)}
-          variant="outlined"
-          placeholder="1000000000000000000000000"
-          defaultValue="1000000000000000000000000"
+          value={(this.state.searchTerm) >= 1 ? utils.format.parseNearAmount(this.state.searchTerm, 0) : 0}
           InputProps={{
             readOnly: true,
           }}

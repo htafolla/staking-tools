@@ -47,13 +47,13 @@ class YoctoCalculator extends Component {
   }
 
   componentDidMount() {
-  	this._isMounted = true;
-  	this.loadData();
+    this._isMounted = true;
+    this.loadData();
 
   }
 
   componentWillUnmount() {
-	this._isMounted = false;
+  this._isMounted = false;
   }
 
   async loadData() {
@@ -65,7 +65,7 @@ class YoctoCalculator extends Component {
       ? new Big(1000000000000000000000000)
       : this.state.searchTerm;
 
-    	this.setState({searchTerm: results});
+      this.setState({searchTerm: results});
 
       var near = new Big(results)
       console.log(near.toFixed())
@@ -98,23 +98,24 @@ class YoctoCalculator extends Component {
     ? new Big(1000000000000000000000000)
     : this.state.searchTerm;
 
-	const classes = makeStyles((theme) => ({
-	  root: {
-	    '& .MuiTextField-root': {
-	      margin: theme.spacing(1),
-	      width: '25ch',
-	    },
-	  },
-	}));
+  const classes = makeStyles((theme) => ({
+    root: {
+      '& .MuiTextField-root': {
+        margin: theme.spacing(1),
+        width: '25ch',
+      },
+    },
+  }));
 
     return (
 
       <div className="App">
 
-		<form className={classes.root} noValidate autoComplete="off">
+    <form className={classes.root} noValidate autoComplete="off">
 
         <TextField
           id="search"
+          type="number"
           className="yocto highlight"
           placeholder="1000000000000000000000000"
           defaultValue="1000000000000000000000000"
@@ -132,14 +133,13 @@ class YoctoCalculator extends Component {
           id="near"
           label="NEAR Ⓝ"
           value={utils.format.formatNearAmount(this.state.searchTerm,  0)}
-          variant="outlined"
           InputProps={{
             readOnly: true,
           }}
         />
 
 
-		</form>
+    </form>
       </div>
     );
   }

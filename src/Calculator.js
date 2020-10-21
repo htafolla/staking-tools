@@ -72,7 +72,7 @@ class Calculator extends Component {
 
 	    const results = !this.state.searchTerm
 	    ? new Big(utils.format.parseNearAmount('0'))
-	    : utils.format.parseNearAmount(this.state.searchTerm);
+	    : this.state.searchTerm;
 
 
     	this.setState({searchTerm: results});
@@ -121,19 +121,20 @@ class Calculator extends Component {
 
 		var staker_stake = new Big(results)
 		console.log(staker_stake.toFixed())
-		this.setState({searchTerm: utils.format.formatNearAmount(staker_stake.toFixed(), 0)});
+		this.setState({searchTerm: staker_stake.toFixed()});
 
 
-		console.log(total_pool_stake.toFixed())
-		var staker_pool_percent = staker_stake.div(total_pool_stake).round(4)	
+		var staker_stake_yocto = new Big(utils.format.parseNearAmount(staker_stake.toFixed(), 0))
+		console.log(staker_stake_yocto)
+		var staker_pool_percent = staker_stake_yocto.div(total_pool_stake).round(6).times(100)
 		console.log(staker_pool_percent.valueOf())
 		this.setState({stakerPercentPool: staker_pool_percent + "%"});
 
 		var total_staker_reward = total_pool_reward.times(staker_stake).div(total_pool_stake).times(staker_pool_commision/100)
-		console.log(total_staker_reward.toFixed())
-		this.setState({annualStakerReward: total_staker_reward.round(2).toFixed()});
+		console.log(total_staker_reward.round().toFixed())
+		this.setState({annualStakerReward: utils.format.parseNearAmount(total_staker_reward.round().toFixed())});
 
-		var staker_annual_percent = total_staker_reward.div(staker_stake).round(4).times(100)
+		var staker_annual_percent = total_staker_reward.div(staker_stake).round(6).times(100)
 		console.log(staker_annual_percent.valueOf())
 		this.setState({stakerAnnualPercent: staker_annual_percent + "%"});
 		
@@ -172,7 +173,7 @@ class Calculator extends Component {
 
     const handleFocus = (event) => event.target.select();
 
-	const results = !this.state.searchTerm
+    const results = !this.state.searchTerm
     ? new Big(utils.format.parseNearAmount('0'))
     : this.state.searchTerm;
 
@@ -191,11 +192,12 @@ class Calculator extends Component {
 
 		<form className={classes.root} noValidate autoComplete="off">
 
-       <TextField
+
+		 <TextField
           id="total-pool-stake"
-          label="Pool Total Stake Ⓝ"
+          label="OSA Total Stake Ⓝ"
           value={this.state.poolTotalStake}
-          variant="outlined"
+
           InputProps={{
             readOnly: true,
           }}
@@ -203,12 +205,23 @@ class Calculator extends Component {
 
        <TextField
           id="pool-annual-rewards"
-          label="Pool Annual Rewards Ⓝ"
+          label="OSA Annual Rewards Ⓝ *"
           value={this.state.poolTotalRewards}
-          variant="outlined"
           InputProps={{
             readOnly: true,
           }}
+        />
+
+
+        <TextField
+          id="search"
+		  type="number"
+          className="highlight"
+          value={this.state.searchTerm}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          label="Amount to Stake Ⓝ"
+          variant="outlined"
         />
 
         <TextField
@@ -221,20 +234,10 @@ class Calculator extends Component {
           }}
         />
 
-        <TextField
-          id="search"
-          className="highlight"
-          value={this.state.searchTerm}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          label="Amount to Stake Ⓝ"
-          variant="outlined"
-        />
-
-        <TextField
-          id="staker-annual-rewards"
-          label="Annual Staking Reward"
-          value={utils.format.formatNearAmount(this.state.annualStakerReward,  0) + ' Ⓝ'}
+       	<TextField
+          id="annual-rate-return"
+          label="Staking APR"
+          value={this.state.stakerAnnualPercent}
           variant="outlined"
           InputProps={{
             readOnly: true,
@@ -242,9 +245,9 @@ class Calculator extends Component {
         />
 
         <TextField
-          id="annual-rate-return"
-          label="Staking APR"
-          value={this.state.stakerAnnualPercent}
+          id="staker-annual-rewards"
+          label="Annual Staking Rewards*"
+          value={utils.format.formatNearAmount(this.state.annualStakerReward,) + ' Ⓝ'}
           variant="outlined"
           InputProps={{
             readOnly: true,
